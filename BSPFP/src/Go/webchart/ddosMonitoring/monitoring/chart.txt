@@ -1,0 +1,33 @@
+                                       Network Traffic Monitor                                      
+                                                                                                    
+                                                                                                    
+        |                                                                                           
+   3.0  +                                                                                           
+        |                                                                                           
+   2.7  +                                                                                           
+        |                                                                                           
+   2.4  +                                                        oooo                         oooo  
+        |                                                        oooo                         oooo  
+        |                  oooo                                  oooo               oooo      oooo  
+   2.1  +                  oooo     oooo               oooo      oooo               oooo      oooo  
+        |        oooo      oooo     oooo               oooo      oooo               oooo      oooo  
+   1.8  +        oooo      oooo     oooo      oooo     oooo      oooo               oooo      oooo  
+        |        oooo      oooo     oooo      oooo     oooo      oooo               oooo      oooo  
+   1.5  +        oooo      oooo     oooo      oooo     oooo      oooo               oooo      oooo  
+        |        oooo      oooo     oooo      oooo     oooo      oooo     oooo      oooo      oooo  
+        |        oooo      oooo     oooo      oooo     oooo      oooo     oooo      oooo      oooo  
+   1.2  +        oooo      oooo     oooo      oooo     oooo      oooo     oooo      oooo      oooo  
+        |        oooo      oooo     oooo      oooo     oooo      oooo     oooo      oooo      oooo  
+  900m  +        oooo      oooo     oooo      oooo     oooo      oooo     oooo      oooo      oooo  
+        |        oooo      oooo     oooo      oooo     oooo      oooo     oooo      oooo      oooo  
+        |        oooo      oooo     oooo      oooo     oooo      oooo     oooo      oooo      oooo  
+  600m  +        oooo      oooo     oooo      oooo     oooo      oooo     oooo      oooo      oooo  
+        |        oooo      oooo     oooo      oooo     oooo      oooo     oooo      oooo      oooo  
+  300m  +        oooo      oooo     oooo      oooo     oooo      oooo     oooo      oooo      oooo  
+        |        oooo      oooo     oooo      oooo     oooo      oooo     oooo      oooo      oooo  
+     0  +                                                                                           
+          +--------+---------+--------+---------+--------+---------+--------+---------+---------+   
+         510      511       512      513       514      515       516      517       518       519  
+
+
+
