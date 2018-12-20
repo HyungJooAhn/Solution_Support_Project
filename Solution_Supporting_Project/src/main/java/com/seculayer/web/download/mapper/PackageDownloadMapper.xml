@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seculayer.web.download.dao.PackageDownloadDAO">
+
+	<!-- ########## Download Menu ########## -->
+	<!-- Download Menu -->
+	<select id="selectDownloadList" resultType="map">
+		SELECT  file_id
+		,		file_type
+		,		file_nm
+		,		file_path
+		,		file_size
+		,		product_code
+		,		major_version
+		,		minor_version
+		,		download_cnt
+		,		md5
+		,		comments
+		,		use_yn
+		,		reg_dt
+		,		proc_id
+		,		proc_ip
+		,		proc_dt
+		FROM 	MGR_PACKAGE_DOWNLOAD
+		WHERE 	major_version = '${major_version}'
+		AND   	file_type = '${file_type}'
+        AND   	product_code = ${product_code}
+        <if test="file_type != null and file_type.equals('patch')">
+        ORDER BY reg_dt DESC
+        </if>
+        <if test="!file_type.equals('patch')">
+        ORDER BY file_nm DESC
+        </if>
+	</select>
+	
+	<update id="downloadCntUp" parameterType="map">
+	 	UPDATE Intelligence.MGR_PACKAGE_DOWNLOAD
+	 	SET download_cnt = download_cnt+1
+	 	WHERE file_id = ${file_id}
+	</update>
+	
+	<select id="selectDownloadPatchDetail" resultType="map">
+		SELECT  file_id,file_type,file_nm,file_path,product_code,major_version,minor_version,download_cnt,md5,comments,reg_dt,proc_id,proc_ip,proc_dt
+		FROM Intelligence.MGR_PACKAGE_DOWNLOAD
+		WHERE file_id = #{file_id} 
+	</select>
+	
+	<select id="selectComUserRole" resultType="int">
+		SELECT role_id 
+		FROM COM_USER
+		WHERE user_id = #{userId}
+	</select>
+	
+	<select id="selectDelFileInfo" parameterType="map" resultType="map">
+		SELECT file_nm, file_type,product_code,major_version,minor_version
+		FROM Intelligence.MGR_PACKAGE_DOWNLOAD
+		WHERE file_id in(${file_no})
+	</select>
+	
+	<delete id="downloadMenufileDelete" parameterType="map">
+		DELETE FROM Intelligence.MGR_PACKAGE_DOWNLOAD 
+		WHERE file_id in (${file_no})
+	</delete>
+	
+	<select id="checkExistenceFile" resultType="map">
+		SELECT  file_id
+		FROM Intelligence.MGR_PACKAGE_DOWNLOAD
+		WHERE major_version = #{major_version}
+		AND   product_code = ${product_code}
+		AND   minor_version = #{minor_version}
+		AND   file_type = #{file_type} 
+		AND   file_nm = #{file_name}
+	</select>
+	
+	<insert id="insertFileData" parameterType="map">
+	<selectKey keyProperty="file_new_id" resultType="long" order="BEFORE">			
+		SELECT IFNULL(MAX(file_id), 0)+1 FROM MGR_PACKAGE_DOWNLOAD
+	</selectKey>
+	 	INSERT INTO Intelligence.MGR_PACKAGE_DOWNLOAD
+	 	(
+		 	file_id,
+		 	file_type,
+		 	file_nm,
+		 	file_path,
+		 	file_size,
+		 	product_code,
+		 	major_version,
+		 	minor_version,
+		 	download_cnt,
+		 	md5,
+		 	comments,
+		 	use_yn,
+		 	reg_dt,
+		 	proc_id,
+		 	proc_ip,
+		 	proc_dt
+	 	) 
+	 	VALUES(
+	 		#{file_new_id},
+	 		#{file_type},
+	 		#{file_nm},
+	 		#{file_path},
+	 		#{file_size},
+	 		${product_code},
+	 		#{major_version},
+	 		#{minor_version},
+	 		0,
+	 		#{md5},
+	 		#{comments},
+	 		#{use_yn},
+	 		DATE_FORMAT(NOW(),'%Y%m%d%H%i%s'),
+	 		#{proc_id},
+	 		#{proc_ip},
+	 		DATE_FORMAT(NOW(),'%Y%m%d%H%i%s')
+	 	);
+	</insert>
+
+	<update id="updateFile" parameterType="map">
+	UPDATE Intelligence.MGR_PACKAGE_DOWNLOAD 
+	SET 
+	<if test="updateFileFlag != null and updateFileFlag.equals('useNew')">
+		file_nm=#{file_name},
+		md5=#{md5},
+    </if>
+		file_version=#{file_version},
+		download_cnt=0,
+		comments=#{comments} 
+	WHERE file_id=#{file_id};
+	</update>
+	
+	<update id="updateDownloadUseYn" parameterType="map">
+		UPDATE 	MGR_PACKAGE_DOWNLOAD
+		SET 	use_yn = #{use_yn},
+				proc_dt = DATE_FORMAT(NOW(),'%Y%m%d%H%i%S')
+		WHERE 	file_id = #{file_id}
+ 	</update>
+ 	
+ 	
+ 	<select id="patchFileListCount" resultType="int">
+ 		SELECT COUNT(file_id)
+ 		FROM MGR_PATCH_FILE
+ 	</select>
+ 	
+ 	<select id="patchFileList" resultType="map">
+ 		SELECT 
+ 			file_id
+ 			,file_nm
+ 			,file_path
+ 			,file_size
+ 			,md5
+ 			,patch_target
+ 			,comments
+ 			,reg_dt
+ 		FROM MGR_PATCH_FILE
+		<choose>
+			<when test="startIndex==null">
+				LIMIT 0, 10
+			</when>
+			<otherwise>
+				LIMIT #{startIndex}, #{pageRow}
+			</otherwise>
+		</choose> 	
+ 	</select>
+ 	
+ 	<select id="patchFileNameDupCheck" resultType="int">
+		SELECT COUNT(file_id)
+		FROM MGR_PATCH_FILE
+		WHERE file_nm = #{file_name}
+	</select>
+	
+	<select id="selectFileInfoByID" resultType="map">
+		SELECT file_path
+		FROM MGR_PATCH_FILE
+		WHERE file_id = #{file_id}
+	</select>
+	
+	<delete id="patchFileDelete" parameterType="map">
+		DELETE FROM MGR_PATCH_FILE 
+		WHERE file_id = #{file_id}
+	</delete>
+	
+	<insert id="insertPatchFileInfo" parameterType="map">
+	 	INSERT INTO MGR_PATCH_FILE
+	 	(
+		 	file_id,
+		 	file_nm,
+		 	file_path,
+		 	file_size,
+		 	md5,
+		 	patch_target,
+		 	comments,
+		 	reg_dt,
+		 	proc_id,
+		 	proc_ip,
+		 	proc_dt
+	 	) 
+	 	VALUES(
+	 		(SELECT COALESCE(MAX(file_id) + 1, 1) FROM MGR_PATCH_FILE a),
+	 		#{file_name},
+	 		#{file_path},
+	 		#{file_size},
+	 		#{file_md5},
+	 		#{patch_target},
+	 		#{file_cont},
+	 		#{reg_dt},
+	 		#{proc_id},
+	 		#{proc_ip},
+	 		DATE_FORMAT(NOW(),'%Y%m%d%H%i%s')
+	 	);
+	</insert>
+	
+</mapper>

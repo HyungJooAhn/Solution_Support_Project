@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seculayer.web.tist.dao.ThreatInfoDAO">
+	
+	<select id="checkServerIP" resultType="int">
+		SELECT
+		    COUNT(*)
+		FROM 
+			MGR_TAXII_SERVER
+		WHERE
+			server_ip = #{taxii_server_ip}	
+	</select>
+	
+	
+	<select id="checkServerID" resultType="int">
+		SELECT
+		    COUNT(*)
+		FROM 
+			MGR_TAXII_SERVER
+		WHERE
+			server_id = #{taxii_server_id}	
+	</select>
+	
+	<insert id="insertTaxiiServer" parameterType="map">
+		INSERT INTO MGR_TAXII_SERVER(
+			server_id,
+			server_nm,
+			server_ip,
+			server_port,
+			server_desc,
+			proc_id,
+			proc_ip,
+			proc_dt,
+			server_service
+		)
+		VALUES(
+			#{server_id},
+			#{server_nm},
+			#{server_ip},
+			#{server_port},
+			#{server_desc},
+			#{proc_id},
+			#{proc_ip},
+			DATE_FORMAT(NOW(),'%Y%m%d%H%i%S'),
+			#{server_service}
+		)
+	</insert>
+	
+	<select id="selectServerListCount" resultType="int">
+		SELECT
+		    COUNT(*)
+		FROM 
+			MGR_TAXII_SERVER
+			<where>
+			<if test="s_id != null and s_id != ''">
+				AND server_id LIKE CONCAT('%',#{s_id},'%')
+			</if>
+			<if test="s_ip != null and s_ip != ''">
+				AND server_ip LIKE CONCAT('%',#{s_ip},'%')
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectServerList" resultType="map">
+		SELECT
+		    *
+		FROM 
+			MGR_TAXII_SERVER
+		<where>
+			<if test="s_id != null and s_id != ''">
+				AND server_id LIKE CONCAT('%',#{s_id},'%')
+			</if>
+			<if test="s_ip != null and s_ip != ''">
+				AND server_ip LIKE CONCAT('%',#{s_ip},'%')
+			</if>
+		</where>
+		ORDER BY proc_dt DESC
+		<if test="startIndex != null and endIndex != null">
+			LIMIT #{startIndex}, #{endIndex}
+		</if>
+	</select>
+		
+	<select id="selectTaxiiServer" resultType="map">
+		SELECT server_id,
+		       server_nm,
+		       server_ip,
+		       server_port,
+		       server_desc,
+		       server_service
+		FROM   MGR_TAXII_SERVER
+		WHERE server_id = #{taxii_server_id}
+	</select>
+	
+	<update id="updateTaxiiServer" parameterType="map">
+		UPDATE MGR_TAXII_SERVER
+			SET server_nm	= #{server_nm},
+			    server_ip	= #{server_ip},
+			    server_port	= #{server_port},
+			    server_desc	= #{server_desc},
+				proc_id			= #{proc_id},
+				proc_ip			= #{proc_ip},
+				proc_dt			= DATE_FORMAT(NOW(),'%Y%m%d%H%i%S'),
+				server_service  = #{server_service}
+		WHERE server_id		= #{server_id}
+ 	</update>
+ 	
+ 	<delete id="deleteTaxiiServer" parameterType="map">
+		DELETE FROM MGR_TAXII_SERVER WHERE server_id = #{server_id}
+ 	</delete>
+</mapper>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seculayer.web.tist.dao.HubAndSpokeTaxiiDAO">
+	
+	<select id="selectServerInfo" resultType="map">
+		SELECT
+		    *
+		FROM 
+			MGR_HSTAXII
+		WHERE
+			server_type='A'
+	</select>
+	
+	<select id="selectServerInfoByType" resultType="map">
+		SELECT
+		    *
+		FROM 
+			MGR_HSTAXII
+		WHERE
+			server_type=#{server_type}
+	</select>
+	
+	<select id="selectThreatServerInfo" resultType="map">
+		SELECT
+		    *
+		FROM 
+			MGR_HSTAXII_THREAT
+		<if test="server_id != null and server_id != ''">
+		WHERE
+			id=#{server_id}	
+		</if>
+	</select>
+	
+	<update id="updateThreatServerInfo" parameterType="map">
+		UPDATE MGR_HSTAXII_THREAT
+		SET `name`=#{server_name},
+			`url`=#{server_url},
+			`port`=#{server_port},
+			`service_path`=#{server_service},
+			`user_name`=#{server_user_name},
+			`collection`=#{server_collection},
+			`ssl`=#{server_ssl}
+		WHERE
+			id=#{server_id}
+	</update>
+	
+	<delete id="deleteThreatServerInfo" parameterType="map">
+		DELETE FROM MGR_HSTAXII_THREAT
+		WHERE id=#{server_id}
+	</delete>
+	
+	<select id="checkServerInfo" resultType="int">
+		SELECT (id) 
+		FROM MGR_HSTAXII
+		WHERE server_type='A';
+	</select>
+	
+	<insert id="setServerInfo" parameterType="map">
+		INSERT INTO MGR_HSTAXII(
+			`id`,
+			`name`,
+			`url`,
+			`port`,
+			`server_type`,
+			`reg_dt`,
+			`ssl`
+		)
+		VALUES(
+			(SELECT MAX(id) + 1 FROM MGR_HSTAXII a),
+			#{server_name},
+			#{server_url},
+			#{server_port},
+			#{server_type},
+			DATE_FORMAT(NOW(),'%Y%m%d%H%i%S'),
+			#{ssl},
+		)
+	</insert>
+	
+	<update id="updateServerInfo" parameterType="map">
+		UPDATE MGR_HSTAXII
+		SET `port`=#{server_port}, `ssl`=#{ssl}
+		WHERE server_type='A'
+	</update>
+	
+	<insert id="insertThreatSharingServer" parameterType="map">
+		INSERT INTO `MGR_HSTAXII_THREAT` (
+		`id`
+		,`name`
+		,`url`
+		,`port`
+		,`service_path`
+		,`user_name`
+		,`collection`
+		,`ssl`
+		,`reg_dt`)VALUES(
+		(SELECT MAX(id)+1 FROM MGR_HSTAXII_THREAT a)
+		,#{server_name}
+		,#{server_url}
+		,#{server_port}
+		,#{server_service_path}
+		,#{server_user}
+		,#{server_collection}
+		,#{server_ssl}
+		,DATE_FORMAT(NOW(), '%Y%m%d%H%i%S')
+		)
+	</insert>
+</mapper>

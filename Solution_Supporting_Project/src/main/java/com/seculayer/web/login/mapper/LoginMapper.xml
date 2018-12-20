@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seculayer.web.login.dao.LoginDAO">
+	<select id="detailUserInfo" resultType="map">
+		SELECT	user_id,
+				user_nm,
+				passwd,
+				tel_no,
+				mobile_no,
+				mail_addr,
+				role_id,
+				group_cd,
+				auth_ip,
+				login_menu_id,
+				description,
+				reg_dt,
+				(SELECT GROUP_CONCAT(cust_id) 
+				 FROM COM_USER_CUST
+				 WHERE user_id= #{userId} 
+				 ) AS cust_id				 
+		FROM   COM_USER
+		WHERE  user_id = #{userId}
+	</select>
+	
+	<update id="updqteUserLastConnDt">
+		UPDATE COM_USER 
+			SET last_conn_dt = DATE_FORMAT(NOW(),'%Y%m%d%H%i%S') 
+		WHERE user_id =#{userId}	
+	</update>
+	
+</mapper>

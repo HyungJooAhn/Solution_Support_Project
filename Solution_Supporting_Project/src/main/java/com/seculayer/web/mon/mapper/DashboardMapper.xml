@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seculayer.web.mon.dao.DashboardDAO">
+	
+	<select id="selectParserCnt" resultType="int">
+		SELECT COUNT(psr_id)
+		FROM(
+			(SELECT * FROM `Intelligence_3_0_00`.`PSR_INFO` WHERE del_yn='N')
+			UNION ALL
+			(SELECT * FROM `Intelligence_3_1_00`.`PSR_INFO` WHERE del_yn='N')
+		)a
+	</select>
+	
+	<select id="selectLogParserCnt" resultType="int">
+		SELECT COUNT(log_psr_id)
+		FROM(
+			(SELECT * FROM `Intelligence_3_0_00`.`LOG_PSR`)
+			UNION ALL
+			(SELECT * FROM `Intelligence_3_1_00`.`LOG_PSR`)
+		)a
+	</select>
+	
+	<select id="selectEventCnt" resultType="int">
+		SELECT COUNT(ruleset_id)
+		FROM(
+			(SELECT * FROM `Intelligence_3_0_00`.`MGR_SEARCH_RULESET` WHERE close_time = '99991231235959')
+			UNION ALL
+			(SELECT * FROM `Intelligence_3_1_00`.`MGR_SEARCH_RULESET` WHERE close_time = '99991231235959')
+		)a
+	</select>
+	
+	<select id="selectSenEventCnt" resultType="int">
+		SELECT COUNT(ruleset_id)
+		FROM(
+			(SELECT * FROM `Intelligence_3_0_00`.`EPS_RULESET`)
+			UNION ALL
+			(SELECT * FROM `Intelligence_3_1_00`.`EPS_RULESET`)
+		)a
+	</select>
+	
+	<select id="selectRelEventCnt" resultType="int">
+		SELECT COUNT(ruleset_id)
+		FROM(
+			(SELECT * FROM `Intelligence_3_0_00`.`MGR_REL_RULESET` WHERE use_yn = 'Y')
+			UNION ALL
+			(SELECT * FROM `Intelligence_3_1_00`.`MGR_REL_RULESET` WHERE use_yn = 'Y')
+		)a
+	</select>
+	<!-- <select id="selectBlackListCnt" resultType="int">
+		SELECT COUNT(blacklist_ip)
+		FROM(
+			(SELECT * FROM `Intelligence_3_0_00`.`MGR_BLACKLIST`)
+			UNION ALL
+			(SELECT * FROM `Intelligence_3_1_00`.`MGR_BLACKLIST`)
+		)a
+	</select> -->
+	
+	<select id="selectBlackListCnt" resultType="int">
+		SELECT COUNT(blacklist_ip)
+		FROM `Intelligence_3_0_00`.`MGR_BLACKLIST`
+	</select>
+	
+	<select id="selectVXShareCnt" resultType="int">
+		SELECT
+		    COUNT(seq)
+		FROM 
+			VX_MGR_FILE
+	</select>
+	
+	<select id="selectRelTICnt" resultType="int">
+		SELECT
+		    COUNT(relationship_id)
+		FROM 
+			RELATIONSHIP_MNG
+	</select>
+	<select id="selectIndicatorTICnt" resultType="int">
+		SELECT
+			COUNT(mng_id)
+		FROM(
+			SELECT
+				CAST(IPM.mng_id AS CHAR) mng_id
+			FROM INDICATOR_PROPERTIES_MNG IPM 
+			INNER JOIN INDICATOR_INFO_MNG IIM  ON IPM.mng_id = IIM.indicator_id AND use_yn = 'Y'
+			UNION ALL 
+			SELECT
+				CAST(IPM.mng_id AS CHAR) mng_id
+	
+			FROM INDICATOR_PROPERTIES_MNG IPM 
+			INNER JOIN PROPERTIES_INFO_MNG PIM  ON IPM.mng_id = PIM.property_id AND use_yn = 'Y'
+		)A
+	</select>
+	<select id="selectRSSTICnt" resultType="int">
+		SELECT 
+			COUNT(rss_id)
+		FROM
+			RSS_COLLECT_MNG
+	</select>
+	<select id="selectCollectTICnt" resultType="int">
+		SELECT 
+			COUNT(recv_time)
+		FROM	
+			(SELECT	recv_time
+			FROM
+				COLLECTOR_STATE_LIST
+				GROUP BY LEFT(recv_time,8)
+		) state
+	</select>
+	<select id="selectAnalysisTICnt" resultType="int">
+		SELECT
+			COUNT(update_dt)
+		FROM(
+			SELECT
+				update_dt
+			FROM MGR_ASSOCIATION_INFO
+			GROUP BY LEFT(update_dt, 8)
+		) A
+	</select>
+	<select id="selectV31ALLCnt" resultType="int">
+		SELECT 
+			COUNT(file_id)
+		FROM 
+			MGR_PACKAGE_DOWNLOAD
+		WHERE 
+			file_type='all-in-one' AND major_version='3.1'
+	</select>
+	<select id="selectV31PatchCnt" resultType="int">
+		SELECT 
+			COUNT(file_id)
+		FROM 
+			MGR_PACKAGE_DOWNLOAD
+		WHERE 
+			file_type='patch' AND major_version='3.1'
+	</select>
+	
+	<select id="selectV30ALLCnt" resultType="int">
+		SELECT 
+			COUNT(file_id)
+		FROM 
+			MGR_PACKAGE_DOWNLOAD
+		WHERE 
+			file_type='all-in-one' AND major_version='3.0'
+	</select>
+	<select id="selectV30PatchCnt" resultType="int">
+		SELECT 
+			COUNT(file_id)
+		FROM 
+			MGR_PACKAGE_DOWNLOAD
+		WHERE 
+			file_type='patch' AND major_version='3.0'
+	</select>
+	
+	<select id="selectV25ALLCnt" resultType="int">
+		SELECT 
+			COUNT(file_id)
+		FROM 
+			MGR_PACKAGE_DOWNLOAD
+		WHERE 
+			file_type='all-in-one' AND major_version='2.5'
+	</select>
+	<select id="selectV25PatchCnt" resultType="int">
+		SELECT 
+			COUNT(file_id)
+		FROM 
+			MGR_PACKAGE_DOWNLOAD
+		WHERE 
+			file_type='patch' AND major_version='2.5'
+	</select>
+	
+	<select id="selectIssueNewCnt" resultType="int">
+		SELECT 
+			COUNT(issue_ticket_no)
+		FROM 
+			ISSUE_TICKET
+		WHERE 
+			issue_level_cd='20'
+	</select>
+	
+	<select id="selectIssueCnt" parameterType="map" resultType="int">
+		SELECT 
+			COUNT(issue_ticket_no)
+		FROM 
+			ISSUE_TICKET
+		WHERE 
+			issue_ticket_req_type=#{issue_cd}
+	</select>
+	
+	<select id="selectReservationList" parameterType="map" resultType="map">
+		SELECT 
+			date
+			,subject
+			,start_time
+			,end_time
+			,room 
+		FROM MGR_RESERVATION 
+		WHERE
+			date=#{date}
+	</select>
+	
+<!-- 	<select id="selectBoardCnt" parameterType="map" resultType="int">
+		SELECT 
+			COUNT(community_no)
+		FROM 
+			COMMUNITY
+		WHERE 
+			type_cd=#{type_cd}
+	</select> -->
+	
+	<select id="selectBoardCnt" resultType="map">
+		SELECT 
+			community_no, type_cd
+		FROM 
+			COMMUNITY
+	</select>
+	
+	<select id="selectNationList_v30" parameterType="map" resultType="map">
+		SELECT country, latitude, longitude, COUNT(a.nation) AS count
+		FROM `Intelligence_3_0_00`.`MGR_BLACKLIST` a 
+		JOIN NATION_LATI_LONGI b ON a.nation = b.country WHERE a.nation IS NOT NULL
+		GROUP BY a.nation
+	</select>
+	<select id="selectNationList_v31" parameterType="map" resultType="map">
+		SELECT *, COUNT(a.nation) AS count
+		FROM `Intelligence_3_1_00`.`MGR_BLACKLIST` a 
+		JOIN NATION_LATI_LONGI b ON a.nation = b.country WHERE a.nation IS NOT NULL
+		GROUP BY a.nation
+	</select>
+	
+	<select id="selectNationIPList_v30" parameterType="map" resultType="map">
+		SELECT blacklist_ip, nation
+		FROM `Intelligence_3_0_00`.`MGR_BLACKLIST` a 
+		JOIN NATION_LATI_LONGI b ON a.nation = b.country WHERE a.nation IS NOT NULL
+	</select>
+	<select id="selectNationIPList_v31" parameterType="map" resultType="map">
+		SELECT blacklist_ip, nation
+		FROM `Intelligence_3_1_00`.`MGR_BLACKLIST` a 
+		JOIN NATION_LATI_LONGI b ON a.nation = b.country WHERE a.nation IS NOT NULL
+	</select>
+	
+	<select id="checkVisitorIP" parameterType="map" resultType="int">
+		SELECT COUNT(id)
+		FROM MGR_VISITOR 
+		WHERE date=#{date} AND ip=#{user_ip} AND user_id=#{user_id}
+	</select>
+	<insert id="insertTodayVisitor" parameterType="map">
+		INSERT INTO MGR_VISITOR(
+			date,
+			ip,
+			user_id,
+			name
+		)VALUES(
+			#{date},
+			#{user_ip},
+			#{user_id},
+			#{user_nm}
+		)
+	</insert>
+	<delete id="deleteOldVisitor" parameterType="map">
+		DELETE FROM MGR_VISITOR
+		WHERE date=#{db_day_2}
+		<foreach item="day" collection="db_day_list" separator=" ">
+			OR date=#{day}
+		</foreach> 
+		
+	</delete>
+	
+	<select id="selectVisitorCnt" parameterType="map" resultType="int">
+		SELECT COUNT(id)
+		FROM MGR_VISITOR 
+		WHERE date=#{date}
+	</select>
+</mapper>

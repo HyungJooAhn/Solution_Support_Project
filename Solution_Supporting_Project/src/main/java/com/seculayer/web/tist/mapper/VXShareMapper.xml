@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seculayer.web.tist.dao.VXShareDAO">
+	
+	<select id="selectVXShareFileCount" resultType="int">
+		SELECT
+		    COUNT(seq)
+		FROM 
+			VX_MGR_FILE
+		<where>
+			<if test="s_vxs_file_nm != null and s_vxs_file_nm != ''">
+				AND file_nm LIKE CONCAT('%',#{s_vxs_file_nm},'%')
+			</if>
+			<if test="s_vxs_date != null and s_vxs_date != ''">
+				AND date LIKE CONCAT('%',#{s_vxs_date},'%')
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectVXShareDataList" resultType="map">
+		SELECT 
+			a.seq,
+			a.CRC32,
+			a.adler_32,
+			a.MD5,
+			a.ripemd_160,
+			a.sha_1,
+			a.sha_256,
+			a.sha_512
+		FROM ( 
+			SELECT 
+				seq 
+			FROM
+				VX_DATA 
+			WHERE 
+				p_file_nm=#{vxs_file_nm} AND 
+				seq > #{row_startIndex} LIMIT #{row_endIndex}
+		) b JOIN VX_DATA a ON b.seq = a.seq 
+		WHERE 
+		a.seq > #{startIndex}
+		<if test="s_vxs_md5 != null and s_vxs_md5 != ''">
+			AND file_nm LIKE CONCAT('%',#{s_vxs_md5},'%')
+		</if>
+		<if test="s_vxs_sha256 != null and s_vxs_sha256 != ''">
+			AND date LIKE CONCAT('%',#{s_vxs_sha256},'%')
+		</if>
+		LIMIT 500
+	</select>
+	
+	<select id="selectVXShareFileList" resultType="map">
+		SELECT
+		    *
+		FROM 
+			VX_MGR_FILE
+		<where>
+			<if test="s_vxs_file_nm != null and s_vxs_file_nm != ''">
+				AND file_nm LIKE CONCAT('%',#{s_vxs_file_nm},'%')
+			</if>
+			<if test="s_vxs_date != null and s_vxs_date != ''">
+				AND DATE LIKE CONCAT('%',#{s_vxs_date},'%')
+			</if>
+		</where>
+		ORDER BY seq ASC
+		<if test="startIndex != null">
+			LIMIT #{startIndex}, 20
+		</if>
+	</select>
+	
+	<select id="selectVXShareFileAllList" resultType="map">
+		SELECT
+		    *
+		FROM 
+			VX_MGR_FILE
+	</select>
+		
+	<select id="getRows" resultType="map">
+		SELECT
+		    rows
+		FROM 
+			VX_MGR_FILE
+		WHERE
+			file_nm=#{vxs_file_nm}
+	</select>
+	
+	<select id="selectVXShareDataBySeq" resultType="map">
+		SELECT
+		    a.seq,
+			a.CRC32,
+			a.adler_32,
+			a.MD5,
+			a.ripemd_160,
+			whirlpool,
+			a.sha_1,
+			a.sha_256,
+			a.sha_512,
+			ssdeep
+		FROM (
+			SELECT
+				seq
+			FROM
+				VX_DATA
+			WHERE
+				seq=#{seq}
+		) b JOIN VX_DATA a ON b.seq = a.seq
+	</select>
+</mapper>

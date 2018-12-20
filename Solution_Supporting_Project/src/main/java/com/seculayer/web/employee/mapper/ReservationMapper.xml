@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seculayer.web.employee.dao.ReservationDAO">
+	
+	<select id="selectCalendarData" resultType="map">
+		SELECT
+		id,
+		date AS reservation_date,
+		subject AS reservation_nm,
+		applicant AS reservation_applicant,
+		start_time,
+		end_time,
+		SUBSTRING_INDEX(start_time, ":", 1) AS startHour,
+		SUBSTRING_INDEX(start_time, ":", -1) AS startMin,
+		SUBSTRING_INDEX(end_time, ":", 1) AS endHour,
+		SUBSTRING_INDEX(end_time, ":", -1) AS endMin,
+		cont AS reservation_cont,
+		applicant_position AS reservation_applicant_position,
+		room AS reservation_room,
+		proc_id
+		FROM MGR_RESERVATION
+	</select>
+	
+	<select id="selectCalendarDataId" resultType="map">
+		SELECT
+		id,
+		date AS reservation_date,
+		subject AS reservation_nm,
+		applicant AS reservation_applicant,
+		applicant_position AS reservation_applicant_position,
+		start_time,
+		end_time,
+		SUBSTRING_INDEX(start_time, ":", 1) AS startHour,
+		SUBSTRING_INDEX(start_time, ":", -1) AS startMin,
+		SUBSTRING_INDEX(end_time, ":", 1) AS endHour,
+		SUBSTRING_INDEX(end_time, ":", -1) AS endMin,
+		cont AS reservation_cont,
+		applicant_position AS reservation_applicant_position,
+		room AS reservation_room,
+		proc_id
+		FROM MGR_RESERVATION
+		<if test="reservation_id !=null and reservation !=''">
+			WHERE id = #{reservation_id}
+		</if>
+	</select>
+
+	<insert id="insertReservation" parameterType="map">
+		INSERT INTO MGR_RESERVATION (
+		date,
+		subject,
+		applicant,
+		start_time,
+		end_time,
+		cont,
+		proc_id,
+		applicant_position,
+		room
+		)VALUES(
+		#{reservation_date},
+		#{reservation_nm},
+		#{reservation_applicant},
+		#{start_time},
+		#{end_time},
+		#{reservation_cont},
+		#{proc_id},
+		#{reservation_applicant_position},
+		#{reservation_room}
+		)
+	</insert>
+	
+	<update id="updateReservation" parameterType="map">
+		UPDATE MGR_RESERVATION
+			SET date		= #{reservation_date},
+			    subject		= #{reservation_nm},
+			    applicant 	= #{reservation_applicant},
+			    applicant_position	= #{reservation_applicant_position},
+			    cont 		= #{reservation_cont},
+				proc_id 	= #{proc_id},
+				start_time 	= #{start_time},
+				end_time	= #{end_time},
+				room 		= #{reservation_room}
+		WHERE id = #{reservation_id}
+ 	</update>
+ 	
+ 	<delete id="deleteReservation" parameterType="map">
+		DELETE FROM MGR_RESERVATION WHERE id = #{reservation_id}
+ 	</delete>
+</mapper>

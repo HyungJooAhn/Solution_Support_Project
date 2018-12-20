@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seculayer.web.employee.dao.AnnualMGRDAO">
+	
+	<select id="selectAnnualList" resultType="map">
+	
+		SELECT
+		*
+		FROM MGR_ANNUAL
+		WHERE (start_date LIKE #{annual_yymm})
+		OR (start_date LIKE #{annual_last_yymm} AND end_date LIKE #{annual_yymm}) 
+		<!--[CDATA[ OR (start_date >= #{pre_start_date} AND start_date <= #{pre_end_date})]]-->
+		ORDER BY start_date
+	</select>
+	
+	<select id="selectAnnualListWeekly" resultType="map">
+		SELECT 
+		* 
+		FROM MGR_ANNUAL
+		WHERE DATE(start_date) BETWEEN #{start_date} AND #{end_date}
+		ORDER BY start_date
+	</select>
+	
+	<select id="selectAnnualListByID" resultType="map">
+		SELECT
+		*
+		FROM MGR_ANNUAL
+		WHERE id = #{select_id}
+	</select>
+	
+	<insert id="insertAnnual" parameterType="map">
+		INSERT INTO MGR_ANNUAL (
+		start_date,
+		end_date,
+		annual_day_cnt,
+		annual_type,
+		annual_applicant,
+		annual_applicant_position,
+		annual_cont,
+		proc_id
+		)VALUES(
+		#{start_date},
+		#{end_date},
+		#{annual_day_cnt},
+		#{annual_type},
+		#{annual_applicant},
+		#{annual_applicant_position},
+		#{annual_cont},
+		#{proc_id}
+		)
+	</insert>
+	
+	<update id="updateAnnualList" parameterType="map">
+		UPDATE MGR_ANNUAL
+			SET start_date		= #{start_date},
+			    end_date		= #{end_date},
+			    annual_day_cnt  = #{annual_day_cnt},
+			    annual_type		= #{annual_type},
+			    annual_applicant = #{annual_applicant},
+			    annual_applicant_position = #{annual_applicant_position},
+			    annual_cont  = #{annual_cont}
+		WHERE id = #{annual_id}
+ 	</update>
+ 	
+ 	<delete id="deleteAnnualList" parameterType="map">
+		DELETE FROM MGR_ANNUAL WHERE id = #{annual_id}
+ 	</delete>
+</mapper>
